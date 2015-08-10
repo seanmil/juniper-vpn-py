@@ -230,6 +230,7 @@ class juniper_vpn(object):
         else:
             ret = p.wait()
         ret = p.returncode
+        self.child = None
 
         # Openconnect specific
         if ret == 2:
@@ -243,8 +244,11 @@ class juniper_vpn(object):
             # run the vpnc-compatible script to clean up changes but
             # not upon SIGTERM.
             # http://permalink.gmane.org/gmane.network.vpn.openconnect.devel/2451
-            self.child.send_signal(signal.SIGINT)
-            self.child.wait()
+            try:
+                self.child.send_signal(signal.SIGINT)
+                self.child.wait()
+            except OSError:
+                pass
         sys.exit(0)
 
 if __name__ == "__main__":
