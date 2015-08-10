@@ -110,6 +110,8 @@ class juniper_vpn(object):
                 return 'key'
             elif form.name == 'frmConfirmation':
                 return 'continue'
+            elif form.name == 'frmNextToken':
+                return 'nexttoken'
             else:
                 raise Exception('Unknown form type:', form.name)
         return 'tncc'
@@ -129,6 +131,8 @@ class juniper_vpn(object):
                 self.action_continue()
             elif action == 'connect':
                 self.action_connect()
+            elif action == 'nexttoken':
+                self.action_nexttoken()
 
             self.last_action = action
 
@@ -185,6 +189,19 @@ class juniper_vpn(object):
         # Untested, a list of availables realms is provided when this
         # is necessary.
         # self.br.form['realm'] = [realm]
+        self.r = self.br.submit()
+
+    def action_nexttoken(self):
+        # We are required to prompt for a second token in sequence
+        # and then submit that back.
+
+        print "Wait until the next token number displays"
+        nexttoken = getpass.getpass('Next Token (no PIN):')
+
+        # Enter username/password
+        self.br.select_form(nr=0)
+        self.br.form['password'] = nexttoken
+
         self.r = self.br.submit()
 
     def action_key(self):
